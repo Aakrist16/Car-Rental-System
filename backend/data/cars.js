@@ -1,9 +1,3 @@
-import corolla from "../assets/cars/corolla.jpg";
-import civic from "../assets/cars/civic.jpg";
-import creta from "../assets/cars/creta.jpg";
-import seltos from "../assets/cars/seltos.jpg";
-import urus from "../assets/cars/urus.jpg";
-
 const cars = [
   {
     id: 1,
@@ -11,7 +5,7 @@ const cars = [
     type: "Sedan",
     dailyRate: 50,
     available: true,
-    image: corolla,
+    plateNumber: "BA-1-CHA-1001",
   },
   {
     id: 2,
@@ -19,7 +13,7 @@ const cars = [
     type: "Sedan",
     dailyRate: 55,
     available: false,
-    image: civic,
+    plateNumber: "BA-2-CHA-2002",
   },
   {
     id: 3,
@@ -27,7 +21,7 @@ const cars = [
     type: "SUV",
     dailyRate: 70,
     available: true,
-    image: creta,
+    plateNumber: "BA-3-CHA-3003",
   },
   {
     id: 4,
@@ -35,16 +29,16 @@ const cars = [
     type: "SUV",
     dailyRate: 75,
     available: true,
-    image: seltos,
+    plateNumber: "BA-4-CHA-4004",
   },
   {
     id: 5,
     model: "Lamborghini Urus SE",
-    type: "SSUV",
+    type: "SUV",
     dailyRate: 500,
     available: false,
-    image: urus,
+    plateNumber: "BA-5-CHA-5005",
   },
 ];
 
-export default cars;
+module.exports = cars;
