@@ -1,40 +1,19 @@
-const cars = require("../data/cars");
+const Car = require("../models/Car");
 
-// GET ALL CARS
+// GET all cars
+const getCars = async (req, res) => {
+  try {
+    const cars = await Car.find();
 
-const getAllCars = (req, res) => {
-  res.status(200).json(cars);
-};
-
-// ADD NEW CAR
-
-const addCar = (req, res) => {
-  const { model, type, dailyRate, available, plateNumber } = req.body;
-
-  if (!model || !type || !dailyRate || !plateNumber) {
-    return res.status(400).json({
-      message: "Please fill all required fields.",
+    res.status(200).json(cars);
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch cars",
+      error: error.message,
     });
   }
-
-  const newCar = {
-    id: cars.length + 1,
-    model,
-    type,
-    dailyRate,
-    available,
-    plateNumber,
-  };
-
-  cars.push(newCar);
-
-  res.status(201).json({
-    message: "Car added successfully.",
-    car: newCar,
-  });
 };
 
 module.exports = {
-  getAllCars,
-  addCar,
+  getCars,
 };

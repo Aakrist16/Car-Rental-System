@@ -1,5 +1,5 @@
-const bookings = require("../data/bookings");
-const cars = require("../data/cars");
+const bookings = require("../models/Booking");
+const cars = require("../models/Car");
 
 // GET ALL BOOKINGS
 
