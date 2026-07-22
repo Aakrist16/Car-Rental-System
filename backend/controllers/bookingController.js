@@ -1,101 +1,108 @@
-const bookings = require("../models/Booking");
-const cars = require("../models/Car");
+const Booking = require("../models/Booking");
 
-// GET ALL BOOKINGS
+// GET all bookings
+const getBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find().populate("car");
 
-const getAllBookings = (req, res) => {
-  res.status(200).json(bookings);
+    res.status(200).json(bookings);
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch bookings",
+      error: error.message,
+    });
+  }
 };
 
-// CREATE BOOKING
+// GET booking by ID
+const getBookingById = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id).populate("car");
 
-const createBooking = (req, res) => {
-  const { customerName, carId, startDate, endDate, totalDays, totalCost } =
-    req.body;
+    if (!booking) {
+      return res.status(404).json({
+        message: "Booking not found",
+      });
+    }
 
-  if (
-    !customerName ||
-    !carId ||
-    !startDate ||
-    !endDate ||
-    !totalDays ||
-    !totalCost
-  ) {
-    return res.status(400).json({
-      message: "Please fill all required fields.",
+    res.status(200).json(booking);
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch booking",
+      error: error.message,
     });
   }
-
-  const car = cars.find((car) => car.id === carId);
-
-  if (!car) {
-    return res.status(404).json({
-      message: "Car not found.",
-    });
-  }
-
-  if (!car.available) {
-    return res.status(400).json({
-      message: "Car is already rented.",
-    });
-  }
-
-  car.available = false;
-
-  const newBooking = {
-    id: bookings.length + 1,
-    customerName,
-    carId,
-    startDate,
-    endDate,
-    totalDays,
-    totalCost,
-    status: "Booked",
-  };
-
-  bookings.push(newBooking);
-
-  res.status(201).json({
-    message: "Booking created successfully.",
-    booking: newBooking,
-  });
 };
 
-// CANCEL BOOKING
+// CREATE booking
+const createBooking = async (req, res) => {
+  try {
+    const booking = await Booking.create(req.body);
 
-const cancelBooking = (req, res) => {
-  const bookingId = Number(req.params.id);
-
-  const booking = bookings.find((b) => b.id === bookingId);
-
-  if (!booking) {
-    return res.status(404).json({
-      message: "Booking not found.",
+    res.status(201).json({
+      message: "Booking created successfully",
+      booking,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: "Failed to create booking",
+      error: error.message,
     });
   }
+};
 
-  if (booking.status === "Cancelled") {
-    return res.status(400).json({
-      message: "Booking is already cancelled.",
+// UPDATE booking
+const updateBooking = async (req, res) => {
+  try {
+    const booking = await Booking.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!booking) {
+      return res.status(404).json({
+        message: "Booking not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Booking updated successfully",
+      booking,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: "Failed to update booking",
+      error: error.message,
     });
   }
+};
 
-  booking.status = "Cancelled";
+// DELETE booking
+const deleteBooking = async (req, res) => {
+  try {
+    const booking = await Booking.findByIdAndDelete(req.params.id);
 
-  const car = cars.find((c) => c.id === booking.carId);
+    if (!booking) {
+      return res.status(404).json({
+        message: "Booking not found",
+      });
+    }
 
-  if (car) {
-    car.available = true;
+    res.status(200).json({
+      message: "Booking deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to delete booking",
+      error: error.message,
+    });
   }
-
-  res.status(200).json({
-    message: "Booking cancelled successfully.",
-    booking,
-  });
 };
 
 module.exports = {
-  getAllBookings,
+  getBookings,
+  getBookingById,
   createBooking,
-  cancelBooking,
+  updateBooking,
+  deleteBooking,
 };

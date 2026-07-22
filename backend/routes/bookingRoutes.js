@@ -1,17 +1,25 @@
 const express = require("express");
-
 const router = express.Router();
 
 const {
-  getAllBookings,
+  getBookings,
+  getBookingById,
   createBooking,
-  cancelBooking,
+  updateBooking,
+  deleteBooking,
 } = require("../controllers/bookingController");
 
-router.get("/", getAllBookings);
+// READ
+router.get("/", getBookings);
+router.get("/:id", getBookingById);
 
+// CREATE
 router.post("/", createBooking);
 
-router.put("/:id/cancel", cancelBooking);
+// UPDATE
+router.put("/:id", updateBooking);
+
+// DELETE
+router.delete("/:id", deleteBooking);
 
 module.exports = router;
