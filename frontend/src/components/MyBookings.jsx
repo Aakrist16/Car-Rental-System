@@ -17,56 +17,58 @@ function MyBookings({ bookings, onCancelBooking }) {
         <div className="space-y-6">
           {bookings.map((booking) => (
             <div
-              key={booking.carId}
+              key={booking._id}
               className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6"
             >
-              <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-6">
-                <div>
-                  <h3 className="text-2xl font-bold text-slate-800">
-                    {booking.carModel}
+              <div className="flex flex-col md:flex-row gap-6">
+                <img
+                  src={`/${booking.car.image}`}
+                  alt={booking.car.model}
+                  className="w-full md:w-64 h-40 object-cover rounded-xl"
+                />
+
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold">
+                    {booking.car.brand} {booking.car.model}
                   </h3>
 
-                  <p className="text-gray-500 mt-4">Customer</p>
+                  <p className="text-gray-500 mt-3">Customer</p>
 
-                  <p className="font-semibold text-slate-800">
-                    {booking.customerName}
+                  <p className="font-semibold">{booking.customerName}</p>
+
+                  <p className="text-gray-500 mt-2">{booking.customerEmail}</p>
+
+                  <p className="mt-4">
+                    <strong>Rental Period:</strong>
                   </p>
-                </div>
 
-                <div className="text-left md:text-right">
-                  <p className="text-gray-500">Rental Period</p>
+                  <p>{new Date(booking.startDate).toLocaleDateString()}</p>
 
-                  <p className="font-semibold">{booking.startDate}</p>
+                  <p>{new Date(booking.endDate).toLocaleDateString()}</p>
 
-                  <p className="font-semibold">{booking.endDate}</p>
-                </div>
-              </div>
+                  <div className="mt-5 flex flex-wrap gap-8">
+                    <div>
+                      <p className="text-gray-500">Total Price</p>
 
-              <div className="border-t mt-6 pt-6 flex flex-col md:flex-row justify-between items-center gap-5">
-                <div className="flex gap-12">
-                  <div>
-                    <p className="text-gray-500">Rental Days</p>
+                      <p className="text-2xl font-bold text-green-600">
+                        ${booking.totalPrice}
+                      </p>
+                    </div>
 
-                    <p className="text-xl font-bold text-slate-800">
-                      {booking.totalDays}
-                    </p>
+                    <div>
+                      <p className="text-gray-500">Status</p>
+
+                      <p className="font-bold">{booking.status}</p>
+                    </div>
                   </div>
 
-                  <div>
-                    <p className="text-gray-500">Total Cost</p>
-
-                    <p className="text-2xl font-bold text-green-600">
-                      ${booking.totalCost}
-                    </p>
-                  </div>
+                  <button
+                    onClick={() => onCancelBooking(booking._id)}
+                    className="mt-6 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-semibold"
+                  >
+                    Cancel Booking
+                  </button>
                 </div>
-
-                <button
-                  onClick={() => onCancelBooking(booking.carId)}
-                  className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-semibold transition"
-                >
-                  Cancel Booking
-                </button>
               </div>
             </div>
           ))}

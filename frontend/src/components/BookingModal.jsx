@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
+import api from "../api/api";
 
-function BookingModal({ isOpen, onClose, selectedCar, onConfirmBooking }) {
+function BookingModal({ isOpen, onClose, selectedCar }) {
   const [customerName, setCustomerName] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
@@ -19,7 +22,7 @@ function BookingModal({ isOpen, onClose, selectedCar, onConfirmBooking }) {
         const days = difference + 1;
 
         setTotalDays(days);
-        setTotalCost(days * selectedCar.dailyRate);
+        setTotalCost(days * selectedCar.pricePerDay);
       } else {
         setTotalDays(0);
         setTotalCost(0);
@@ -33,6 +36,7 @@ function BookingModal({ isOpen, onClose, selectedCar, onConfirmBooking }) {
   useEffect(() => {
     if (isOpen) {
       setCustomerName("");
+      setCustomerEmail("");
       setStartDate("");
       setEndDate("");
       setTotalDays(0);
@@ -42,9 +46,14 @@ function BookingModal({ isOpen, onClose, selectedCar, onConfirmBooking }) {
 
   if (!isOpen || !selectedCar) return null;
 
-  function handleConfirmBooking() {
+  async function handleConfirmBooking() {
     if (!customerName.trim()) {
       alert("Please enter your name.");
+      return;
+    }
+
+    if (!customerEmail.trim()) {
+      alert("Please enter your email.");
       return;
     }
 
@@ -58,17 +67,26 @@ function BookingModal({ isOpen, onClose, selectedCar, onConfirmBooking }) {
       return;
     }
 
-    onConfirmBooking({
-      carId: selectedCar.id,
-      carModel: selectedCar.model,
-      customerName,
-      startDate,
-      endDate,
-      totalDays,
-      totalCost,
-    });
-  }
+    try {
+      await api.post("/bookings", {
+        car: selectedCar._id,
+        customerName,
+        customerEmail,
+        startDate,
+        endDate,
+        totalPrice: totalCost,
+        status: "Pending",
+      });
 
+      alert("Booking Created Successfully!");
+
+      onClose();
+    } catch (error) {
+      console.error(error);
+
+      alert("Failed to create booking.");
+    }
+  }
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
       <div className="relative bg-white w-full max-w-xl max-h-[90vh] rounded-2xl overflow-y-auto shadow-2xl">
@@ -80,14 +98,14 @@ function BookingModal({ isOpen, onClose, selectedCar, onConfirmBooking }) {
         </button>
 
         <img
-          src={selectedCar.image}
-          alt={selectedCar.model}
+          src={`/${selectedCar.image}`}
+          alt={selectedCar.name}
           className="w-full h-64 object-cover"
         />
 
         <div className="p-7">
           <h2 className="text-3xl font-bold text-slate-800">
-            {selectedCar.model}
+            {selectedCar.brand} {selectedCar.model}
           </h2>
 
           <p className="text-gray-500 mt-1">{selectedCar.type}</p>
@@ -98,7 +116,7 @@ function BookingModal({ isOpen, onClose, selectedCar, onConfirmBooking }) {
             </p>
 
             <p className="text-4xl font-bold text-slate-800">
-              ${selectedCar.dailyRate}
+              ${selectedCar.pricePerDay}
               <span className="text-lg font-normal text-gray-500">/day</span>
             </p>
           </div>
@@ -111,6 +129,18 @@ function BookingModal({ isOpen, onClose, selectedCar, onConfirmBooking }) {
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
               placeholder="Enter your full name"
+              className="w-full border border-gray-300 rounded-xl p-3 outline-none focus:ring-2 focus:ring-slate-300"
+            />
+          </div>
+
+          <div className="mb-5">
+            <label className="block font-semibold mb-2">Customer Email</label>
+
+            <input
+              type="email"
+              value={customerEmail}
+              onChange={(e) => setCustomerEmail(e.target.value)}
+              placeholder="Enter your email"
               className="w-full border border-gray-300 rounded-xl p-3 outline-none focus:ring-2 focus:ring-slate-300"
             />
           </div>

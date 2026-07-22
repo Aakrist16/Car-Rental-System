@@ -2,17 +2,19 @@ function CarCard({ car, onBook }) {
   return (
     <div className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
       <img
-        src={car.image}
-        alt={car.model}
+        src={`/${car.image}`}
+        alt={car.name}
         className="w-full h-52 object-cover"
       />
 
       <div className="p-5">
-        <h2 className="text-xl font-bold mb-2">{car.model}</h2>
+        <h2 className="text-xl font-bold mb-2">
+          {car.brand} {car.model}
+        </h2>
 
         <p className="text-gray-600">{car.type}</p>
 
-        <p className="text-blue-600 font-bold mt-2">${car.dailyRate}/day</p>
+        <p className="text-blue-600 font-bold mt-2">${car.pricePerDay}/day</p>
 
         <span
           className={`inline-block mt-3 px-3 py-1 rounded-full text-white ${

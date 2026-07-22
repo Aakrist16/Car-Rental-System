@@ -1,13 +1,10 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const dns = require("node:dns");
+
+const connectDB = require("./config/db");
+const Car = require("./models/Car");
 
 dotenv.config();
-
-// Fix DNS issue for MongoDB Atlas
-dns.setServers(["1.1.1.1", "1.0.0.1"]);
-
-const Car = require("./models/Car");
 
 const cars = [
   {
@@ -21,33 +18,33 @@ const cars = [
     transmission: "Automatic",
     seats: 5,
     available: false,
-    image: "corolla.jpg",
+    image: "cars/corolla.jpg",
   },
   {
     name: "Honda Civic",
     brand: "Honda",
     model: "Civic",
     type: "Sedan",
-    year: 2023,
+    year: 2024,
     pricePerDay: 55,
     fuelType: "Petrol",
     transmission: "Automatic",
     seats: 5,
     available: false,
-    image: "civic.jpg",
+    image: "cars/civic.jpg",
   },
   {
     name: "Hyundai Creta",
     brand: "Hyundai",
     model: "Creta",
     type: "SUV",
-    year: 2024,
+    year: 2023,
     pricePerDay: 70,
     fuelType: "Petrol",
     transmission: "Automatic",
     seats: 5,
     available: true,
-    image: "creta.jpg",
+    image: "cars/creta.jpg",
   },
   {
     name: "Kia Seltos",
@@ -56,24 +53,24 @@ const cars = [
     type: "SUV",
     year: 2024,
     pricePerDay: 75,
-    fuelType: "Diesel",
+    fuelType: "Petrol",
     transmission: "Automatic",
     seats: 5,
     available: true,
-    image: "seltos.jpg",
+    image: "cars/seltos.jpg",
   },
   {
     name: "Lamborghini Urus SE",
     brand: "Lamborghini",
     model: "Urus SE",
     type: "SUV",
-    year: 2024,
+    year: 2025,
     pricePerDay: 500,
     fuelType: "Petrol",
     transmission: "Automatic",
     seats: 5,
     available: false,
-    image: "urus.jpg",
+    image: "cars/urus.jpg",
   },
   {
     name: "Formula 1 - Red Bull",
@@ -86,7 +83,7 @@ const cars = [
     transmission: "Sequential",
     seats: 1,
     available: true,
-    image: "redbull.jpg",
+    image: "cars/redbull.jpg",
   },
   {
     name: "Formula 1 - McLaren",
@@ -99,28 +96,25 @@ const cars = [
     transmission: "Sequential",
     seats: 1,
     available: true,
-    image: "mclaren.jpg",
+    image: "cars/mclaren.jpg",
   },
 ];
 
-const importData = async () => {
+const seedData = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
+    await connectDB();
 
-    console.log("MongoDB Connected");
-
-    // Delete existing cars
     await Car.deleteMany();
 
-    // Insert new cars
     await Car.insertMany(cars);
 
-    console.log("Cars Inserted Successfully!");
-    process.exit();
+    console.log("Cars seeded successfully!");
+
+    mongoose.connection.close();
   } catch (error) {
-    console.error("Error:", error);
-    process.exit(1);
+    console.error(error);
+    mongoose.connection.close();
   }
 };
 
-importData();
+seedData();
